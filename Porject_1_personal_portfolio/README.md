@@ -6,8 +6,7 @@ This project showcases my skills, projects, background, and learning journey in 
 ---
 
 ## 🚀 Live Preview
-https://your-portfolio-link.com
-
+https://cool-alpaca-da478d.netlify.app/
 ---
 
 ## 📸 Preview
