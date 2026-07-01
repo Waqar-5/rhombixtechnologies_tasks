@@ -1,0 +1,12 @@
+node_modules/
+.env
+dist/
+build/
+*.log
+.DS_Store
+backend/uploads/avatars/*
+backend/uploads/covers/*
+backend/uploads/posts/*
+!backend/uploads/avatars/.gitkeep
+!backend/uploads/covers/.gitkeep
+!backend/uploads/posts/.gitkeep
