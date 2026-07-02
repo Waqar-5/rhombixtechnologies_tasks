@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISM — Music Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><span></span><span></span><span></span></div>
+      <div class="brand-text">
+        <h1>PRISM</h1>
+        <p>music, refracted</p>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="searchInput" type="text" placeholder="Search tracks or artists…" autocomplete="off">
+    </div>
+
+    <div class="chip-row" id="chipRow" role="tablist" aria-label="Filter by category">
+      <button class="chip is-active" data-cat="all">All</button>
+    </div>
+
+    <div class="library">
+      <div class="library-head">
+        <span>Library</span>
+        <span id="trackCount" class="library-count">0 tracks</span>
+      </div>
+      <ul id="trackList" class="track-list" aria-label="Track library"></ul>
+    </div>
+
+    <div class="playlist-panel">
+      <div class="library-head">
+        <span>Your Queue</span>
+        <span id="queueCount" class="library-count">0 added</span>
+      </div>
+      <ul id="queueList" class="queue-list" aria-label="Your playlist queue">
+        <li class="queue-empty" id="queueEmpty">Tap <strong>+</strong> on any track to build your set.</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN / NOW PLAYING ================= -->
+  <main class="stage">
+    <div class="stage-aura" id="stageAura" aria-hidden="true"></div>
+
+    <div class="stage-content">
+      <p class="eyebrow" id="nowPlayingLabel">Nothing queued yet</p>
+
+      <div class="disc-zone">
+        <div class="disc-wrap">
+          <svg class="facet-ring" viewBox="0 0 300 300" aria-hidden="true">
+            <polygon points="150,4 268,76 268,224 150,296 32,224 32,76" fill="none" stroke-width="1.5"/>
+          </svg>
+          <div class="disc" id="disc">
+            <div class="disc-face" id="discFace">
+              <div class="disc-groove"></div>
+              <div class="disc-groove g2"></div>
+              <div class="disc-groove g3"></div>
+              <div class="disc-label" id="discLabel">
+                <span id="discInitial">?</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-info">
+        <h2 id="trackTitle">Select a track</h2>
+        <p id="trackArtist">— from the library to begin —</p>
+      </div>
+
+      <div class="scrubber-wrap">
+        <span class="time" id="timeCurrent">0:00</span>
+        <div class="scrubber" id="scrubber">
+          <div class="scrubber-track"></div>
+          <div class="scrubber-fill" id="scrubberFill"></div>
+          <div class="scrubber-bars" id="scrubberBars"></div>
+          <div class="scrubber-handle" id="scrubberHandle"></div>
+        </div>
+        <span class="time" id="timeDuration">0:00</span>
+      </div>
+    </div>
+
+    <!-- ============= TRANSPORT BAR ============= -->
+    <div class="transport">
+      <div class="transport-left">
+        <div class="mini-cover" id="miniCover"><span id="miniInitial">?</span></div>
+        <div class="mini-meta">
+          <strong id="miniTitle">Nothing playing</strong>
+          <small id="miniArtist">Pick a track to start</small>
+        </div>
+      </div>
+
+      <div class="transport-center">
+        <div class="transport-buttons">
+          <button class="tbtn" id="shuffleBtn" title="Shuffle" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h3.5c1.5 0 2.2.7 3 1.8l6 8.4c.8 1.1 1.5 1.8 3 1.8H22M4 18h3.5c1.5 0 2.2-.7 3-1.8l.5-.7M15 6h3M22 6h-4m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="tbtn" id="prevBtn" title="Previous">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM19 5v14l-11-7z"/></svg>
+          </button>
+          <button class="tbtn tbtn-play" id="playBtn" title="Play / Pause">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+          </button>
+          <button class="tbtn" id="nextBtn" title="Next">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM5 5v14l11-7z"/></svg>
+          </button>
+          <button class="tbtn" id="repeatBtn" title="Repeat" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="transport-right">
+        <span class="cat-pill" id="nowCat">—</span>
+        <div class="volume-wrap">
+          <svg class="vol-icon" id="volIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
+          <div class="knob" id="volKnob" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70" tabindex="0">
+            <div class="knob-track"></div>
+            <div class="knob-indicator" id="knobIndicator"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
