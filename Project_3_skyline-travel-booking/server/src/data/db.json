@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "id": "usr_SwgttyInAd",
+      "name": "Khan",
+      "email": "waqar@gamil.com",
+      "passwordHash": "$2a$10$rlT67BgBDUh4UnSUDkCJn.XdjBWcCtqRZ4P4cwI4GEe1cer0eZXD2",
+      "createdAt": "2026-07-10T03:31:59.017Z"
+    },
+    {
+      "id": "usr_BE0hIxXWIb",
+      "name": "Khan",
+      "email": "khan@gmail.com",
+      "passwordHash": "$2a$10$QEibP70SxOWYpTEBNfc.NOTAQ8QLaF9UkRtBPzS2kmfAbrsy8VW/C",
+      "createdAt": "2026-07-19T06:01:30.506Z"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "bkg_RP00WEtqDM",
+      "userId": "usr_SwgttyInAd",
+      "destinationId": "dst_bali",
+      "hotelId": "htl_1",
+      "flightId": "flt_1",
+      "checkIn": "2026-07-24",
+      "checkOut": "2026-07-30",
+      "guests": 2,
+      "totalPrice": 534,
+      "passengerName": "Khan",
+      "status": "confirmed",
+      "confirmationCode": "SKY-BX1AYIB8",
+      "createdAt": "2026-07-10T03:32:33.199Z"
+    }
+  ]
+}

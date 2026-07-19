@@ -1,0 +1,90 @@
+[
+  {
+    "id": "dst_bali",
+    "city": "Bali",
+    "country": "Indonesia",
+    "code": "DPS",
+    "tagline": "Rice terraces, temples, and tide pools",
+    "pricePerNightFrom": 42,
+    "rating": 4.8,
+    "tags": ["beach", "culture", "budget"],
+    "image": "https://picsum.photos/seed/bali-skyline/1200/800"
+  },
+  {
+    "id": "dst_kyoto",
+    "city": "Kyoto",
+    "country": "Japan",
+    "code": "KIX",
+    "tagline": "A thousand years of temples and tea",
+    "pricePerNightFrom": 96,
+    "rating": 4.9,
+    "tags": ["culture", "food"],
+    "image": "https://picsum.photos/seed/kyoto-skyline/1200/800"
+  },
+  {
+    "id": "dst_reykjavik",
+    "city": "Reykjavik",
+    "country": "Iceland",
+    "code": "KEF",
+    "tagline": "Glaciers, geysers, and the northern lights",
+    "pricePerNightFrom": 140,
+    "rating": 4.7,
+    "tags": ["nature", "adventure"],
+    "image": "https://picsum.photos/seed/reykjavik-skyline/1200/800"
+  },
+  {
+    "id": "dst_capetown",
+    "city": "Cape Town",
+    "country": "South Africa",
+    "code": "CPT",
+    "tagline": "Where two oceans meet a mountain",
+    "pricePerNightFrom": 68,
+    "rating": 4.7,
+    "tags": ["nature", "food", "adventure"],
+    "image": "https://picsum.photos/seed/capetown-skyline/1200/800"
+  },
+  {
+    "id": "dst_lisbon",
+    "city": "Lisbon",
+    "country": "Portugal",
+    "code": "LIS",
+    "tagline": "Tiled hills rolling into the Atlantic",
+    "pricePerNightFrom": 78,
+    "rating": 4.6,
+    "tags": ["culture", "food", "budget"],
+    "image": "https://picsum.photos/seed/lisbon-skyline/1200/800"
+  },
+  {
+    "id": "dst_queenstown",
+    "city": "Queenstown",
+    "country": "New Zealand",
+    "code": "ZQN",
+    "tagline": "The adventure capital, ringed by peaks",
+    "pricePerNightFrom": 110,
+    "rating": 4.8,
+    "tags": ["adventure", "nature"],
+    "image": "https://picsum.photos/seed/queenstown-skyline/1200/800"
+  },
+  {
+    "id": "dst_marrakech",
+    "city": "Marrakech",
+    "country": "Morocco",
+    "code": "RAK",
+    "tagline": "Souks, spice, and Atlas mountain air",
+    "pricePerNightFrom": 55,
+    "rating": 4.5,
+    "tags": ["culture", "budget"],
+    "image": "https://picsum.photos/seed/marrakech-skyline/1200/800"
+  },
+  {
+    "id": "dst_banff",
+    "city": "Banff",
+    "country": "Canada",
+    "code": "YYC",
+    "tagline": "Turquoise lakes below the Rockies",
+    "pricePerNightFrom": 132,
+    "rating": 4.9,
+    "tags": ["nature", "adventure"],
+    "image": "https://picsum.photos/seed/banff-skyline/1200/800"
+  }
+]

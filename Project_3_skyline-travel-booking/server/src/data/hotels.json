@@ -1,0 +1,386 @@
+[
+  {
+    "id": "htl_1",
+    "destinationId": "dst_bali",
+    "name": "The Grand Bali",
+    "city": "Bali",
+    "pricePerNight": 47,
+    "rating": 4.5,
+    "amenities": [
+      "Free WiFi",
+      "Pool",
+      "Breakfast included",
+      "Pet friendly"
+    ],
+    "roomsAvailable": 4,
+    "image": "https://picsum.photos/seed/hotel-dst_bali-0/900/600"
+  },
+  {
+    "id": "htl_2",
+    "destinationId": "dst_bali",
+    "name": "Palm Court Bali",
+    "city": "Bali",
+    "pricePerNight": 83,
+    "rating": 4,
+    "amenities": [
+      "Free WiFi",
+      "Pet friendly",
+      "Airport shuttle",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 3,
+    "image": "https://picsum.photos/seed/hotel-dst_bali-1/900/600"
+  },
+  {
+    "id": "htl_3",
+    "destinationId": "dst_bali",
+    "name": "Harbor House Bali",
+    "city": "Bali",
+    "pricePerNight": 113,
+    "rating": 4.3,
+    "amenities": [
+      "Pool",
+      "Rooftop bar",
+      "Airport shuttle",
+      "Gym"
+    ],
+    "roomsAvailable": 3,
+    "image": "https://picsum.photos/seed/hotel-dst_bali-2/900/600"
+  },
+  {
+    "id": "htl_4",
+    "destinationId": "dst_kyoto",
+    "name": "The Grand Kyoto",
+    "city": "Kyoto",
+    "pricePerNight": 99,
+    "rating": 4.7,
+    "amenities": [
+      "Breakfast included",
+      "Free WiFi",
+      "Pet friendly",
+      "Gym"
+    ],
+    "roomsAvailable": 7,
+    "image": "https://picsum.photos/seed/hotel-dst_kyoto-0/900/600"
+  },
+  {
+    "id": "htl_5",
+    "destinationId": "dst_kyoto",
+    "name": "Palm Court Kyoto",
+    "city": "Kyoto",
+    "pricePerNight": 135,
+    "rating": 4.9,
+    "amenities": [
+      "Breakfast included",
+      "Free WiFi",
+      "Pool",
+      "Pet friendly"
+    ],
+    "roomsAvailable": 2,
+    "image": "https://picsum.photos/seed/hotel-dst_kyoto-1/900/600"
+  },
+  {
+    "id": "htl_6",
+    "destinationId": "dst_kyoto",
+    "name": "Harbor House Kyoto",
+    "city": "Kyoto",
+    "pricePerNight": 181,
+    "rating": 4.5,
+    "amenities": [
+      "Breakfast included",
+      "Spa",
+      "Airport shuttle",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 8,
+    "image": "https://picsum.photos/seed/hotel-dst_kyoto-2/900/600"
+  },
+  {
+    "id": "htl_7",
+    "destinationId": "dst_reykjavik",
+    "name": "The Grand Reykjavik",
+    "city": "Reykjavik",
+    "pricePerNight": 141,
+    "rating": 4.9,
+    "amenities": [
+      "Pet friendly",
+      "Gym",
+      "Rooftop bar",
+      "Free WiFi"
+    ],
+    "roomsAvailable": 4,
+    "image": "https://picsum.photos/seed/hotel-dst_reykjavik-0/900/600"
+  },
+  {
+    "id": "htl_8",
+    "destinationId": "dst_reykjavik",
+    "name": "Palm Court Reykjavik",
+    "city": "Reykjavik",
+    "pricePerNight": 183,
+    "rating": 4.5,
+    "amenities": [
+      "Rooftop bar",
+      "Gym",
+      "Pool",
+      "Breakfast included"
+    ],
+    "roomsAvailable": 4,
+    "image": "https://picsum.photos/seed/hotel-dst_reykjavik-1/900/600"
+  },
+  {
+    "id": "htl_9",
+    "destinationId": "dst_reykjavik",
+    "name": "Harbor House Reykjavik",
+    "city": "Reykjavik",
+    "pricePerNight": 227,
+    "rating": 4.5,
+    "amenities": [
+      "Pool",
+      "Pet friendly",
+      "Gym",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 3,
+    "image": "https://picsum.photos/seed/hotel-dst_reykjavik-2/900/600"
+  },
+  {
+    "id": "htl_10",
+    "destinationId": "dst_capetown",
+    "name": "The Grand Cape Town",
+    "city": "Cape Town",
+    "pricePerNight": 82,
+    "rating": 4.5,
+    "amenities": [
+      "Pool",
+      "Airport shuttle",
+      "Pet friendly",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 6,
+    "image": "https://picsum.photos/seed/hotel-dst_capetown-0/900/600"
+  },
+  {
+    "id": "htl_11",
+    "destinationId": "dst_capetown",
+    "name": "Palm Court Cape Town",
+    "city": "Cape Town",
+    "pricePerNight": 104,
+    "rating": 4.9,
+    "amenities": [
+      "Pool",
+      "Spa",
+      "Breakfast included",
+      "Airport shuttle"
+    ],
+    "roomsAvailable": 9,
+    "image": "https://picsum.photos/seed/hotel-dst_capetown-1/900/600"
+  },
+  {
+    "id": "htl_12",
+    "destinationId": "dst_capetown",
+    "name": "Harbor House Cape Town",
+    "city": "Cape Town",
+    "pricePerNight": 153,
+    "rating": 4.6,
+    "amenities": [
+      "Airport shuttle",
+      "Pet friendly",
+      "Pool",
+      "Spa"
+    ],
+    "roomsAvailable": 8,
+    "image": "https://picsum.photos/seed/hotel-dst_capetown-2/900/600"
+  },
+  {
+    "id": "htl_13",
+    "destinationId": "dst_lisbon",
+    "name": "The Grand Lisbon",
+    "city": "Lisbon",
+    "pricePerNight": 81,
+    "rating": 4.3,
+    "amenities": [
+      "Pet friendly",
+      "Rooftop bar",
+      "Spa",
+      "Gym"
+    ],
+    "roomsAvailable": 5,
+    "image": "https://picsum.photos/seed/hotel-dst_lisbon-0/900/600"
+  },
+  {
+    "id": "htl_14",
+    "destinationId": "dst_lisbon",
+    "name": "Palm Court Lisbon",
+    "city": "Lisbon",
+    "pricePerNight": 122,
+    "rating": 4.9,
+    "amenities": [
+      "Pool",
+      "Gym",
+      "Pet friendly",
+      "Breakfast included"
+    ],
+    "roomsAvailable": 6,
+    "image": "https://picsum.photos/seed/hotel-dst_lisbon-1/900/600"
+  },
+  {
+    "id": "htl_15",
+    "destinationId": "dst_lisbon",
+    "name": "Harbor House Lisbon",
+    "city": "Lisbon",
+    "pricePerNight": 164,
+    "rating": 4.7,
+    "amenities": [
+      "Breakfast included",
+      "Pet friendly",
+      "Rooftop bar",
+      "Gym"
+    ],
+    "roomsAvailable": 6,
+    "image": "https://picsum.photos/seed/hotel-dst_lisbon-2/900/600"
+  },
+  {
+    "id": "htl_16",
+    "destinationId": "dst_queenstown",
+    "name": "The Grand Queenstown",
+    "city": "Queenstown",
+    "pricePerNight": 110,
+    "rating": 4.7,
+    "amenities": [
+      "Breakfast included",
+      "Pool",
+      "Gym",
+      "Spa"
+    ],
+    "roomsAvailable": 4,
+    "image": "https://picsum.photos/seed/hotel-dst_queenstown-0/900/600"
+  },
+  {
+    "id": "htl_17",
+    "destinationId": "dst_queenstown",
+    "name": "Palm Court Queenstown",
+    "city": "Queenstown",
+    "pricePerNight": 148,
+    "rating": 4.9,
+    "amenities": [
+      "Breakfast included",
+      "Pool",
+      "Gym",
+      "Spa"
+    ],
+    "roomsAvailable": 5,
+    "image": "https://picsum.photos/seed/hotel-dst_queenstown-1/900/600"
+  },
+  {
+    "id": "htl_18",
+    "destinationId": "dst_queenstown",
+    "name": "Harbor House Queenstown",
+    "city": "Queenstown",
+    "pricePerNight": 199,
+    "rating": 4.5,
+    "amenities": [
+      "Spa",
+      "Pet friendly",
+      "Breakfast included",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 8,
+    "image": "https://picsum.photos/seed/hotel-dst_queenstown-2/900/600"
+  },
+  {
+    "id": "htl_19",
+    "destinationId": "dst_marrakech",
+    "name": "The Grand Marrakech",
+    "city": "Marrakech",
+    "pricePerNight": 67,
+    "rating": 4,
+    "amenities": [
+      "Gym",
+      "Rooftop bar",
+      "Pet friendly",
+      "Pool"
+    ],
+    "roomsAvailable": 2,
+    "image": "https://picsum.photos/seed/hotel-dst_marrakech-0/900/600"
+  },
+  {
+    "id": "htl_20",
+    "destinationId": "dst_marrakech",
+    "name": "Palm Court Marrakech",
+    "city": "Marrakech",
+    "pricePerNight": 95,
+    "rating": 4.3,
+    "amenities": [
+      "Gym",
+      "Free WiFi",
+      "Rooftop bar",
+      "Pet friendly"
+    ],
+    "roomsAvailable": 6,
+    "image": "https://picsum.photos/seed/hotel-dst_marrakech-1/900/600"
+  },
+  {
+    "id": "htl_21",
+    "destinationId": "dst_marrakech",
+    "name": "Harbor House Marrakech",
+    "city": "Marrakech",
+    "pricePerNight": 131,
+    "rating": 4.9,
+    "amenities": [
+      "Rooftop bar",
+      "Breakfast included",
+      "Pool",
+      "Airport shuttle"
+    ],
+    "roomsAvailable": 7,
+    "image": "https://picsum.photos/seed/hotel-dst_marrakech-2/900/600"
+  },
+  {
+    "id": "htl_22",
+    "destinationId": "dst_banff",
+    "name": "The Grand Banff",
+    "city": "Banff",
+    "pricePerNight": 139,
+    "rating": 4.4,
+    "amenities": [
+      "Pool",
+      "Rooftop bar",
+      "Breakfast included",
+      "Pet friendly"
+    ],
+    "roomsAvailable": 6,
+    "image": "https://picsum.photos/seed/hotel-dst_banff-0/900/600"
+  },
+  {
+    "id": "htl_23",
+    "destinationId": "dst_banff",
+    "name": "Palm Court Banff",
+    "city": "Banff",
+    "pricePerNight": 172,
+    "rating": 4.1,
+    "amenities": [
+      "Pool",
+      "Airport shuttle",
+      "Gym",
+      "Rooftop bar"
+    ],
+    "roomsAvailable": 7,
+    "image": "https://picsum.photos/seed/hotel-dst_banff-1/900/600"
+  },
+  {
+    "id": "htl_24",
+    "destinationId": "dst_banff",
+    "name": "Harbor House Banff",
+    "city": "Banff",
+    "pricePerNight": 210,
+    "rating": 3.9,
+    "amenities": [
+      "Spa",
+      "Rooftop bar",
+      "Free WiFi",
+      "Breakfast included"
+    ],
+    "roomsAvailable": 7,
+    "image": "https://picsum.photos/seed/hotel-dst_banff-2/900/600"
+  }
+]
