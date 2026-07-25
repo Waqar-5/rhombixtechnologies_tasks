@@ -1,0 +1,242 @@
+import { useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Camera, FileText, Upload, X, Loader2, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import PageHeader from '@/components/common/PageHeader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Avatar } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { profileSchema } from '@/lib/schemas';
+import { usersApi } from '@/api/users';
+import { authApi } from '@/api/auth';
+import { useAuth } from '@/context/AuthContext';
+
+export default function SeekerProfile() {
+  const { user, refreshUser } = useAuth();
+  const avatarInputRef = useRef();
+  const resumeInputRef = useRef();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: user?.name || '',
+      headline: user?.headline || '',
+      bio: user?.bio || '',
+      location: user?.location || '',
+      phone: user?.phone || '',
+      skills: user?.skills?.join(', ') || ''
+    }
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      await usersApi.updateProfile({
+        ...data,
+        skills: data.skills ? data.skills.split(',').map((s) => s.trim()).filter(Boolean) : []
+      });
+      await refreshUser();
+      toast.success('Profile updated');
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      await usersApi.uploadAvatar(formData);
+      await refreshUser();
+      toast.success('Avatar updated');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleResumeChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingResume(true);
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+      await usersApi.uploadResume(formData);
+      await refreshUser();
+      toast.success('Resume uploaded — one-click apply is ready');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    try {
+      await usersApi.deleteResume();
+      await refreshUser();
+      toast.success('Resume removed');
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const currentPassword = form.get('currentPassword');
+    const newPassword = form.get('newPassword');
+    setChangingPassword(true);
+    try {
+      await authApi.changePassword({ currentPassword, newPassword });
+      toast.success('Password updated');
+      e.target.reset();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl">
+      <PageHeader title="My profile" description="Keep this up to date so recruiters get an accurate picture of you." />
+
+      <Card className="mb-6">
+        <CardContent className="pt-6 flex items-center gap-5">
+          <div className="relative">
+            <Avatar src={user?.avatar?.url} name={user?.name} size="xl" />
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-primary text-white shadow-glow"
+              aria-label="Change avatar"
+            >
+              {uploadingAvatar ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+            </button>
+            <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
+          </div>
+          <div>
+            <p className="font-medium">{user?.name}</p>
+            <p className="text-sm text-muted-foreground">{user?.email}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Resume</CardTitle>
+          <CardDescription>Powers one-click apply — recruiters receive this exact file with every application.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {user?.resume?.url ? (
+            <div className="flex items-center gap-3 rounded-xl border border-border p-4">
+              <FileText className="h-5 w-5 text-primary shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{user.resume.originalName}</p>
+                <p className="text-xs text-muted-foreground">
+                  Uploaded {user.resume.uploadedAt ? new Date(user.resume.uploadedAt).toLocaleDateString() : ''}
+                </p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => resumeInputRef.current?.click()}>
+                <Upload className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleResumeDelete}>
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => resumeInputRef.current?.click()}
+              className="w-full flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-8 hover:border-primary/50 hover:bg-primary/5 transition-colors"
+            >
+              {uploadingResume ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
+              <span className="text-sm text-muted-foreground">Upload your resume (PDF or DOCX, max 5MB)</span>
+            </button>
+          )}
+          <input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" hidden onChange={handleResumeChange} />
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Basic information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="name">Full name</Label>
+              <Input id="name" {...register('name')} />
+              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+            </div>
+            <div>
+              <Label htmlFor="headline">Headline</Label>
+              <Input id="headline" placeholder="e.g. Senior Frontend Engineer" {...register('headline')} />
+            </div>
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea id="bio" placeholder="A short summary about your experience and goals" {...register('bio')} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input id="location" placeholder="City, Country or Remote" {...register('location')} />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" placeholder="+1 555 000 0000" {...register('phone')} />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="skills">Skills</Label>
+              <Input id="skills" placeholder="React, Node.js, MongoDB" {...register('skills')} />
+              <p className="text-xs text-muted-foreground mt-1">Separate skills with commas</p>
+            </div>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              Save changes
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Change password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            <div>
+              <Label htmlFor="currentPassword">Current password</Label>
+              <Input id="currentPassword" name="currentPassword" type="password" required />
+            </div>
+            <div>
+              <Label htmlFor="newPassword">New password</Label>
+              <Input id="newPassword" name="newPassword" type="password" minLength={8} required />
+            </div>
+            <Button type="submit" variant="outline" disabled={changingPassword}>
+              {changingPassword && <Loader2 className="h-4 w-4 animate-spin" />}
+              Update password
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

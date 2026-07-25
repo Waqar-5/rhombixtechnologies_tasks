@@ -13,6 +13,13 @@
       "email": "khan@gmail.com",
       "passwordHash": "$2a$10$QEibP70SxOWYpTEBNfc.NOTAQ8QLaF9UkRtBPzS2kmfAbrsy8VW/C",
       "createdAt": "2026-07-19T06:01:30.506Z"
+    },
+    {
+      "id": "usr_20AQZ4b6nb",
+      "name": "Ali",
+      "email": "ali@gamil.com",
+      "passwordHash": "$2a$10$LC53Tm7rsNkA.t23GYTiBOO7.ITvaSAOcnVMeD8UK0cI4kYXAvLTm",
+      "createdAt": "2026-07-19T06:21:47.004Z"
     }
   ],
   "bookings": [
