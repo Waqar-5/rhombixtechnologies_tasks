@@ -30,7 +30,8 @@ export default function JobForm() {
   const [extraFields, setExtraFields] = useState({
     responsibilities: '',
     requirements: '',
-    niceToHave: ''
+    niceToHave: '',
+    benefits: ''
   });
 
   const {
@@ -71,7 +72,8 @@ export default function JobForm() {
         setExtraFields({
           responsibilities: (job.responsibilities || []).join('\n'),
           requirements: (job.requirements || []).join('\n'),
-          niceToHave: (job.niceToHave || []).join('\n')
+          niceToHave: (job.niceToHave || []).join('\n'),
+          benefits: (job.benefits || []).join('\n')
         });
       }
       setLoadingJob(false);
@@ -94,6 +96,7 @@ export default function JobForm() {
       responsibilities: listToArray(extraFields.responsibilities),
       requirements: listToArray(extraFields.requirements),
       niceToHave: listToArray(extraFields.niceToHave),
+      benefits: listToArray(extraFields.benefits),
       status
     };
 
@@ -258,6 +261,16 @@ export default function JobForm() {
                 placeholder="One per line"
                 value={extraFields.niceToHave}
                 onChange={(e) => setExtraFields((prev) => ({ ...prev, niceToHave: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <Label>Benefits</Label>
+              <Textarea
+                rows={3}
+                placeholder="One per line — e.g. Health insurance, Unlimited PTO, Remote stipend"
+                value={extraFields.benefits}
+                onChange={(e) => setExtraFields((prev) => ({ ...prev, benefits: e.target.value }))}
               />
             </div>
 

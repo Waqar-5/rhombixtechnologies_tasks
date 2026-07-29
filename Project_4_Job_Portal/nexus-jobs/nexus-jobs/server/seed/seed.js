@@ -238,6 +238,10 @@ const seedDatabase = async ({ destroy = false } = {}) => {
           'Comfortable working in a fast-paced, remote-friendly environment'
         ],
         niceToHave: ['Experience at an early-stage startup', 'Open source contributions'],
+        benefits: randomFrom(
+          ['Health insurance', 'Unlimited PTO', 'Remote-friendly', '401k match', 'Annual learning budget', 'Home office stipend', 'Equity'],
+          randomInt(3, 5)
+        ),
         skills: randomFrom(skillPool, randomInt(3, 6)),
         jobType: randomFrom(jobTypes)[0],
         workMode: randomFrom(workModes)[0],

@@ -32,6 +32,7 @@ const jobSchema = new mongoose.Schema(
     responsibilities: [{ type: String, trim: true }],
     requirements: [{ type: String, trim: true }],
     niceToHave: [{ type: String, trim: true }],
+    benefits: [{ type: String, trim: true }],
     skills: [{ type: String, trim: true }],
     jobType: {
       type: String,

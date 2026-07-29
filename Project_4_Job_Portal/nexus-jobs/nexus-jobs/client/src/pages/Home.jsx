@@ -86,16 +86,23 @@ const howItWorksSteps = [
 
 function FaqItem({ item }) {
   const [open, setOpen] = useState(false);
+  const panelId = `faq-panel-${item.q.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-controls={panelId}
         className="flex w-full items-center justify-between px-5 py-4 text-left font-medium"
       >
         {item.q}
-        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
-      {open && <div className="px-5 pb-4 text-sm text-muted-foreground">{item.a}</div>}
+      {open && (
+        <div id={panelId} role="region" className="px-5 pb-4 text-sm text-muted-foreground">
+          {item.a}
+        </div>
+      )}
     </div>
   );
 }

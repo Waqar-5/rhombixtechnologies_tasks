@@ -153,7 +153,7 @@ export default function DashboardLayout({ role }) {
             </span>
             <span className="font-display font-bold">Nexus Jobs</span>
           </Link>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <Menu className="h-5 w-5" />
           </Button>
         </div>

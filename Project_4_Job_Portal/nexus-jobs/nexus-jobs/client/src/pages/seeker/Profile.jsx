@@ -153,10 +153,10 @@ export default function SeekerProfile() {
                   Uploaded {user.resume.uploadedAt ? new Date(user.resume.uploadedAt).toLocaleDateString() : ''}
                 </p>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => resumeInputRef.current?.click()}>
+              <Button variant="ghost" size="icon" onClick={() => resumeInputRef.current?.click()} aria-label="Replace resume">
                 <Upload className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleResumeDelete}>
+              <Button variant="ghost" size="icon" onClick={handleResumeDelete} aria-label="Delete resume">
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </div>

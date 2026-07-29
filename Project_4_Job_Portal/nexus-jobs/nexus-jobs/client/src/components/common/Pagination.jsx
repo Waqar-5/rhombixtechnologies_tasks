@@ -17,7 +17,7 @@ export default function Pagination({ page, pages, onPageChange }) {
 
   return (
     <div className="flex items-center justify-center gap-1.5 mt-8">
-      <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+      <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => onPageChange(page - 1)} aria-label="Previous page">
         <ChevronLeft className="h-4 w-4" />
       </Button>
       {pageNumbers.map((p, idx) =>
@@ -29,6 +29,8 @@ export default function Pagination({ page, pages, onPageChange }) {
           <button
             key={p}
             onClick={() => onPageChange(p)}
+            aria-label={`Page ${p}`}
+            aria-current={p === page ? 'page' : undefined}
             className={cn(
               'h-10 w-10 rounded-xl text-sm font-medium transition-colors',
               p === page ? 'bg-gradient-primary text-white shadow-glow' : 'hover:bg-muted text-foreground'
@@ -38,7 +40,7 @@ export default function Pagination({ page, pages, onPageChange }) {
           </button>
         )
       )}
-      <Button variant="outline" size="icon" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>
+      <Button variant="outline" size="icon" disabled={page >= pages} onClick={() => onPageChange(page + 1)} aria-label="Next page">
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>

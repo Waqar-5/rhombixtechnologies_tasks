@@ -152,7 +152,7 @@ export default function Jobs() {
             <div className="absolute right-0 top-0 h-full w-80 max-w-full bg-background p-4 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-display font-semibold">Filters</h3>
-                <Button variant="ghost" size="icon" onClick={() => setShowMobileFilters(false)}>
+                <Button variant="ghost" size="icon" onClick={() => setShowMobileFilters(false)} aria-label="Close filters">
                   <X className="h-4 w-4" />
                 </Button>
               </div>

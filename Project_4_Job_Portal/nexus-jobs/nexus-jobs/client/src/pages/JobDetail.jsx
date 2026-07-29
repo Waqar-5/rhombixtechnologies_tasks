@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Building2,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  Gift
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
@@ -222,6 +223,19 @@ export default function JobDetail() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {job.benefits?.length > 0 && (
+              <div className="mt-6">
+                <h2 className="font-display font-semibold text-lg mb-3">Benefits</h2>
+                <div className="flex flex-wrap gap-2">
+                  {job.benefits.map((b) => (
+                    <Badge key={b} variant="success" className="gap-1">
+                      <Gift className="h-3 w-3" /> {b}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             )}
 

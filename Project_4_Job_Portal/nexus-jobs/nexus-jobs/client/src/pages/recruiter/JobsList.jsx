@@ -139,12 +139,12 @@ export default function RecruiterJobsList() {
                   <Button variant="outline" size="sm" onClick={() => handleToggleStatus(job)}>
                     {job.status === 'open' ? 'Close' : 'Reopen'}
                   </Button>
-                  <Button variant="ghost" size="icon" asChild>
+                  <Button variant="ghost" size="icon" asChild aria-label={`Edit ${job.title}`}>
                     <Link to={`/recruiter/jobs/${job._id}/edit`}>
                       <Pencil className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(job)}>
+                  <Button variant="ghost" size="icon" onClick={() => setDeleteTarget(job)} aria-label={`Delete ${job.title}`}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
