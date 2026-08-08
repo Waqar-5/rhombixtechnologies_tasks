@@ -1,9 +1,8 @@
 const multer = require('multer');
 const ApiError = require('../utils/ApiError');
 
-// Memory storage — files are buffered in RAM, then written to local disk
-// via utils/fileStorage.js (which each controller calls after multer
-// finishes parsing the request).
+// Memory storage — files are buffered in RAM and streamed straight to
+// Cloudinary (see config/cloudinary.js), so nothing ever touches disk.
 const storage = multer.memoryStorage();
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];

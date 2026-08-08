@@ -3,6 +3,7 @@ import { FiPlus, FiTrash2, FiEdit2, FiX } from 'react-icons/fi';
 import { categoryService } from '../../services/resourceServices';
 import { PageLoader } from '../../components/ui/Spinner';
 import { getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const AdminCategoriesPage = () => {
@@ -52,30 +53,37 @@ const AdminCategoriesPage = () => {
       formData.append('description', description);
 
       if (editingId) {
-        await categoryService.updateCategory(editingId, formData);
-        toast.success('Category updated');
+        await promiseToast(categoryService.updateCategory(editingId, formData), {
+          loading: 'Updating category...',
+          success: 'Category updated',
+        });
       } else {
-        await categoryService.createCategory(formData);
-        toast.success('Category created');
+        await promiseToast(categoryService.createCategory(formData), {
+          loading: 'Creating category...',
+          success: 'Category created',
+        });
       }
       resetForm();
       load();
     } catch (err) {
-      toast.error(getErrorMessage(err));
+      // error toast already shown by promiseToast
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this category? This is blocked if any blogs still use it.')) return;
-    try {
-      await categoryService.deleteCategory(id);
-      setCategories((prev) => prev.filter((c) => c._id !== id));
-      toast.success('Category deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (id, name) => {
+    confirmToast(`Delete "${name}"? This is blocked if any blogs still use it.`, async () => {
+      try {
+        await promiseToast(categoryService.deleteCategory(id), {
+          loading: 'Deleting category...',
+          success: 'Category deleted',
+        });
+        setCategories((prev) => prev.filter((c) => c._id !== id));
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   return (
@@ -111,7 +119,7 @@ const AdminCategoriesPage = () => {
               </div>
               <div className="flex items-center gap-1">
                 <button onClick={() => startEdit(c)} className="p-2 text-ink-400 hover:text-signal transition-colors"><FiEdit2 size={15} /></button>
-                <button onClick={() => handleDelete(c._id)} className="p-2 text-ink-400 hover:text-rose transition-colors"><FiTrash2 size={15} /></button>
+                <button onClick={() => handleDelete(c._id, c.name)} className="p-2 text-ink-400 hover:text-rose transition-colors"><FiTrash2 size={15} /></button>
               </div>
             </div>
           ))}

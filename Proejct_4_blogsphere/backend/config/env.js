@@ -12,10 +12,10 @@ const required = [
   'JWT_REFRESH_SECRET',
 ];
 
-// In production we also require mail credentials, since that feature
-// can't silently no-op the way it might in local dev.
+// In production we also require mail + Cloudinary credentials, since
+// those features can't silently no-op the way they might in local dev.
 if (process.env.NODE_ENV === 'production') {
-  required.push('SMTP_HOST', 'SMTP_USER', 'SMTP_PASS');
+  required.push('SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET');
 }
 
 const missing = required.filter((key) => !process.env[key]);
@@ -30,10 +30,6 @@ module.exports = {
   isProd: process.env.NODE_ENV === 'production',
   port: parseInt(process.env.PORT, 10) || 5000,
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  // Public base URL of THIS backend, used to build absolute URLs for
-  // locally-stored uploaded images (e.g. http://localhost:5000/uploads/...).
-  // Override with SERVER_URL in production (your actual backend domain).
-  serverUrl: process.env.SERVER_URL || `http://localhost:${parseInt(process.env.PORT, 10) || 5000}`,
 
   mongoUri: process.env.MONGO_URI,
 
@@ -48,6 +44,12 @@ module.exports = {
   tokens: {
     emailVerificationExpiresMin: parseInt(process.env.EMAIL_VERIFICATION_EXPIRES_MIN, 10) || 1440,
     passwordResetExpiresMin: parseInt(process.env.PASSWORD_RESET_EXPIRES_MIN, 10) || 15,
+  },
+
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
 
   smtp: {

@@ -3,6 +3,7 @@ import { FiSearch } from 'react-icons/fi';
 import { adminService } from '../../services/resourceServices';
 import { PageLoader } from '../../components/ui/Spinner';
 import { formatDate, getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -32,38 +33,42 @@ const AdminUsersPage = () => {
   };
 
   const handleToggleBlock = async (u) => {
+    const action = u.isBlocked ? adminService.unblockUser(u._id) : adminService.blockUser(u._id);
     try {
-      if (u.isBlocked) {
-        await adminService.unblockUser(u._id);
-      } else {
-        await adminService.blockUser(u._id);
-      }
+      await promiseToast(action, {
+        loading: u.isBlocked ? 'Unblocking user...' : 'Blocking user...',
+        success: u.isBlocked ? 'User unblocked' : 'User blocked',
+      });
       setUsers((prev) => prev.map((x) => (x._id === u._id ? { ...x, isBlocked: !x.isBlocked } : x)));
-      toast.success(u.isBlocked ? 'User unblocked' : 'User blocked');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
   const handleRoleChange = async (u, role) => {
     try {
-      await adminService.updateUser(u._id, { role });
+      await promiseToast(adminService.updateUser(u._id, { role }), {
+        loading: 'Updating role...',
+        success: `Role updated to ${role}`,
+      });
       setUsers((prev) => prev.map((x) => (x._id === u._id ? { ...x, role } : x)));
-      toast.success('Role updated');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
-  const handleDelete = async (u) => {
-    if (!window.confirm(`Delete ${u.name} and all their content? This cannot be undone.`)) return;
-    try {
-      await adminService.deleteUser(u._id);
-      setUsers((prev) => prev.filter((x) => x._id !== u._id));
-      toast.success('User deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (u) => {
+    confirmToast(`Delete ${u.name} and all their content? This can't be undone.`, async () => {
+      try {
+        await promiseToast(adminService.deleteUser(u._id), {
+          loading: 'Deleting user...',
+          success: 'User deleted',
+        });
+        setUsers((prev) => prev.filter((x) => x._id !== u._id));
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   return (

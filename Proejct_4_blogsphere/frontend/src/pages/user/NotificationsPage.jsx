@@ -46,6 +46,7 @@ const NotificationsPage = () => {
     try {
       await notificationService.deleteNotification(id);
       setNotifications((prev) => prev.filter((n) => n._id !== id));
+      toast.success('Notification removed', { duration: 1500 });
     } catch (err) {
       toast.error(getErrorMessage(err));
     }

@@ -10,7 +10,7 @@ const ApiError = require('../utils/ApiError');
 const sendResponse = require('../utils/apiResponse');
 const ApiFeatures = require('../utils/apiFeatures');
 const { sanitizeRichText } = require('../utils/sanitizeHtml');
-const { saveBufferToDisk, deleteFromDisk } = require('../utils/fileStorage');
+const { uploadBufferToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
 const emailService = require('../services/emailService');
 const config = require('../config/env');
 
@@ -175,7 +175,7 @@ const getBlogBySlug = asyncHandler(async (req, res) => {
   if (!blog) throw ApiError.notFound('Blog not found');
 
   const isOwnerOrAdmin =
-    req.user && (String(blog.author._id) === String(req.user._id) || req.user.role === 'admin');
+    req.user && blog.author && (String(blog.author._id) === String(req.user._id) || req.user.role === 'admin');
 
   if (blog.status !== 'published' && !isOwnerOrAdmin) {
     throw ApiError.notFound('Blog not found');
@@ -258,13 +258,13 @@ const createBlog = asyncHandler(async (req, res) => {
 
   if (req.files?.coverImage?.[0]) {
     const file = req.files.coverImage[0];
-    const result = saveBufferToDisk(file.buffer, 'blogs/covers', file.originalname);
+    const result = await uploadBufferToCloudinary(file.buffer, 'blogsphere/blogs/covers');
     coverImage = { url: result.url, publicId: result.publicId };
   }
 
   if (req.files?.images?.length) {
     for (const file of req.files.images) {
-      const result = saveBufferToDisk(file.buffer, 'blogs/gallery', file.originalname);
+      const result = await uploadBufferToCloudinary(file.buffer, 'blogsphere/blogs/gallery');
       images.push({ url: result.url, publicId: result.publicId });
     }
   }
@@ -361,15 +361,15 @@ const updateBlog = asyncHandler(async (req, res) => {
   }
 
   if (req.files?.coverImage?.[0]) {
-    if (blog.coverImage?.publicId) deleteFromDisk(blog.coverImage.publicId);
+    if (blog.coverImage?.publicId) await deleteFromCloudinary(blog.coverImage.publicId);
     const file = req.files.coverImage[0];
-    const result = saveBufferToDisk(file.buffer, 'blogs/covers', file.originalname);
+    const result = await uploadBufferToCloudinary(file.buffer, 'blogsphere/blogs/covers');
     blog.coverImage = { url: result.url, publicId: result.publicId };
   }
 
   if (req.files?.images?.length) {
     for (const file of req.files.images) {
-      const result = saveBufferToDisk(file.buffer, 'blogs/gallery', file.originalname);
+      const result = await uploadBufferToCloudinary(file.buffer, 'blogsphere/blogs/gallery');
       blog.images.push({ url: result.url, publicId: result.publicId });
     }
   }
@@ -408,7 +408,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
     ...(blog.coverImage?.publicId ? [blog.coverImage.publicId] : []),
     ...blog.images.map((img) => img.publicId).filter(Boolean),
   ];
-  imagesToDelete.forEach((id) => deleteFromDisk(id));
+  await Promise.all(imagesToDelete.map((id) => deleteFromCloudinary(id)));
 
   await Promise.all([
     Comment.deleteMany({ blog: blog._id }),

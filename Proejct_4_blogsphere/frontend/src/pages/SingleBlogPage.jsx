@@ -6,15 +6,19 @@ import {
 import { blogService } from '../services/blogService';
 import { useAuth } from '../context/AuthContext';
 import { formatDate, formatCount, getErrorMessage } from '../utils/formatters';
+import { confirmToast, promiseToast } from '../utils/toastHelpers';
+import { useTilt } from '../hooks/useTilt';
 import BlogCard from '../components/blog/BlogCard';
 import CommentSection from '../components/comment/CommentSection';
 import { PageLoader } from '../components/ui/Spinner';
+import SafeImage from '../components/ui/SafeImage';
 import toast from 'react-hot-toast';
 
 const SingleBlogPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const tilt = useTilt({ max: 6, scale: 1.01, glare: 0.12 });
 
   const [blog, setBlog] = useState(null);
   const [related, setRelated] = useState([]);
@@ -77,51 +81,73 @@ const SingleBlogPage = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm('Delete this blog permanently? This cannot be undone.')) return;
-    try {
-      await blogService.deleteBlog(blog._id);
-      toast.success('Blog deleted');
-      navigate('/dashboard/my-blogs');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = () => {
+    confirmToast(`Delete "${blog.title}"? This can't be undone.`, async () => {
+      try {
+        await promiseToast(blogService.deleteBlog(blog._id), {
+          loading: 'Deleting post...',
+          success: 'Post deleted',
+        });
+        navigate('/dashboard/my-blogs');
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   if (isLoading) return <PageLoader />;
   if (!blog) return null;
 
-  const isOwnerOrAdmin = user && (String(user._id) === String(blog.author._id) || user.role === 'admin');
+  const isOwnerOrAdmin = user && blog.author && (String(user._id) === String(blog.author._id) || user.role === 'admin');
+  const authorExists = Boolean(blog.author);
 
   return (
-    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <div className="mb-8">
         {blog.category?.name && (
           <Link to={`/blogs?category=${blog.category.slug}`} className="eyebrow hover:underline">
             {blog.category.name}
           </Link>
         )}
-        <h1 className="mt-3 font-display text-4xl md:text-5xl font-semibold text-ink leading-[1.1]">
+        <h1 className="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-ink leading-[1.1]">
           {blog.title}
         </h1>
-        {blog.excerpt && <p className="mt-4 text-lg text-ink-400 font-body leading-relaxed">{blog.excerpt}</p>}
+        {blog.excerpt && <p className="mt-4 text-base sm:text-lg text-ink-400 font-body leading-relaxed">{blog.excerpt}</p>}
 
         <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
-          <Link to={`/authors/${blog.author._id}`} className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-full bg-signal-50 overflow-hidden flex items-center justify-center font-display text-signal">
-              {blog.author.avatar?.url ? (
-                <img src={blog.author.avatar.url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                blog.author.name[0]
-              )}
+          {authorExists ? (
+            <Link to={`/authors/${blog.author._id}`} className="flex items-center gap-3 group">
+              <div className="w-11 h-11 rounded-full bg-signal-50 overflow-hidden flex items-center justify-center font-display text-signal">
+                <SafeImage
+                  src={blog.author.avatar?.url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  fallback={blog.author.name[0]}
+                />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-ink group-hover:text-signal transition-colors">{blog.author.name}</p>
+                <p className="text-xs font-mono text-ink-300">
+                  {formatDate(blog.publishedAt || blog.createdAt)} · {blog.readingTimeMinutes} min read
+                </p>
+              </div>
+            </Link>
+          ) : (
+            // The original author's account was deleted — the post itself
+            // is kept (see userController.deleteMyAccount), but there's no
+            // profile left to link to.
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-ink/[0.06] flex items-center justify-center font-display text-ink-300">
+                ?
+              </div>
+              <div>
+                <p className="text-sm font-medium text-ink-400 italic">Deleted user</p>
+                <p className="text-xs font-mono text-ink-300">
+                  {formatDate(blog.publishedAt || blog.createdAt)} · {blog.readingTimeMinutes} min read
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-ink group-hover:text-signal transition-colors">{blog.author.name}</p>
-              <p className="text-xs font-mono text-ink-300">
-                {formatDate(blog.publishedAt || blog.createdAt)} · {blog.readingTimeMinutes} min read
-              </p>
-            </div>
-          </Link>
+          )}
 
           {isOwnerOrAdmin && (
             <div className="flex gap-2">
@@ -137,7 +163,21 @@ const SingleBlogPage = () => {
       </div>
 
       {blog.coverImage?.url && (
-        <img src={blog.coverImage.url} alt={blog.title} className="w-full rounded-xl2 mb-10 object-cover max-h-[480px]" />
+        <div
+          ref={tilt.ref}
+          onMouseMove={tilt.onMouseMove}
+          onMouseLeave={tilt.onMouseLeave}
+          style={tilt.style}
+          className="relative rounded-xl2 mb-8 sm:mb-10 overflow-hidden shadow-card"
+        >
+          <SafeImage
+            src={blog.coverImage.url}
+            alt={blog.title}
+            className="w-full object-cover max-h-[320px] sm:max-h-[400px] md:max-h-[480px]"
+          />
+          {/* Glare highlight that tracks the cursor, driven by useTilt */}
+          <div data-tilt-glare className="absolute inset-0 pointer-events-none transition-[background] duration-200" />
+        </div>
       )}
 
       <div className="prose-editorial" dangerouslySetInnerHTML={{ __html: blog.content }} />
@@ -152,7 +192,7 @@ const SingleBlogPage = () => {
         </div>
       )}
 
-      <div className="mt-10 flex items-center gap-3 py-5 border-y border-ink/10">
+      <div className="mt-10 flex items-center flex-wrap gap-3 py-5 border-y border-ink/10">
         <button onClick={handleLike} className={`btn-secondary ${liked ? '!border-rose !text-rose bg-rose/5' : ''}`}>
           <FiHeart className={liked ? 'fill-rose' : ''} size={16} /> {formatCount(likesCount)}
         </button>
@@ -165,7 +205,7 @@ const SingleBlogPage = () => {
         <button onClick={handleShare} className="btn-secondary">
           <FiShare2 size={16} />
         </button>
-        <span className="ml-auto flex items-center gap-1.5 text-xs font-mono text-ink-300">
+        <span className="flex items-center gap-1.5 text-xs font-mono text-ink-300 sm:ml-auto">
           <FiEye size={13} /> {formatCount(blog.views)} views
         </span>
       </div>

@@ -19,6 +19,7 @@ createRoot(document.getElementById('root')).render(
         },
         success: { iconTheme: { primary: '#C99A2E', secondary: '#14171F' } },
         error: { iconTheme: { primary: '#C1443C', secondary: '#14171F' } },
+        loading: { iconTheme: { primary: '#5B84AC', secondary: '#14171F' } },
       }}
     />
   </StrictMode>,

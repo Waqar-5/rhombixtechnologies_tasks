@@ -26,14 +26,16 @@ const toggleLike = asyncHandler(async (req, res) => {
     blog.likesCount += 1;
     liked = true;
 
-    await createNotification({
-      recipient: blog.author,
-      sender: req.user._id,
-      type: 'blog_liked',
-      message: `${req.user.name} liked your post "${blog.title}"`,
-      link: `/blogs/${blog.slug}`,
-      relatedBlog: blog._id,
-    });
+    if (blog.author) {
+      await createNotification({
+        recipient: blog.author,
+        sender: req.user._id,
+        type: 'blog_liked',
+        message: `${req.user.name} liked your post "${blog.title}"`,
+        link: `/blogs/${blog.slug}`,
+        relatedBlog: blog._id,
+      });
+    }
   }
 
   await blog.save();

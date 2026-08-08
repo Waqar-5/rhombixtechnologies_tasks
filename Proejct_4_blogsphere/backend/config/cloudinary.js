@@ -10,7 +10,9 @@ cloudinary.config({
 
 /**
  * Uploads a file buffer to Cloudinary using an upload stream, so we never
- * have to write temp files to disk (works cleanly with multer memoryStorage).
+ * have to write temp files to disk (works cleanly with multer memoryStorage,
+ * and is required on serverless hosts like Vercel where the filesystem
+ * is read-only/ephemeral).
  * @param {Buffer} fileBuffer
  * @param {string} folder - Cloudinary folder, e.g. 'blogsphere/avatars'
  * @param {object} [options]

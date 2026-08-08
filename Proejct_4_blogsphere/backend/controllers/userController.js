@@ -3,7 +3,7 @@ const User = require('../models/User');
 const Blog = require('../models/Blog');
 const ApiError = require('../utils/ApiError');
 const sendResponse = require('../utils/apiResponse');
-const { saveBufferToDisk, deleteFromDisk } = require('../utils/fileStorage');
+const { uploadBufferToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
 const { clearAuthCookies } = require('../utils/tokenUtils');
 
 /**
@@ -41,14 +41,12 @@ const updateAvatar = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user.avatar?.publicId) {
-    deleteFromDisk(user.avatar.publicId);
+    await deleteFromCloudinary(user.avatar.publicId);
   }
 
-  // Note: Cloudinary previously applied a face-aware 400x400 crop here.
-  // Local storage saves the image as uploaded — if you want that
-  // resize/crop behavior back, add the `sharp` package and process
-  // req.file.buffer before saving.
-  const result = saveBufferToDisk(req.file.buffer, 'avatars', req.file.originalname);
+  const result = await uploadBufferToCloudinary(req.file.buffer, 'blogsphere/avatars', {
+    transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }],
+  });
 
   user.avatar = { url: result.url, publicId: result.publicId };
   await user.save();
@@ -91,7 +89,7 @@ const deleteMyAccount = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Incorrect password. Account deletion requires password confirmation.');
   }
 
-  if (user.avatar?.publicId) deleteFromDisk(user.avatar.publicId);
+  if (user.avatar?.publicId) await deleteFromCloudinary(user.avatar.publicId);
 
   // Note: we intentionally do NOT cascade-delete the user's blogs/comments
   // here to preserve content integrity for other readers; that cleanup is

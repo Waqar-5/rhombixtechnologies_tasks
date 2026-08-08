@@ -5,6 +5,7 @@ import { authService } from '../../services/authService';
 import { userService } from '../../services/resourceServices';
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/formatters';
+import { promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const SettingsPage = () => {
@@ -21,16 +22,18 @@ const SettingsPage = () => {
   const onChangePassword = async (values) => {
     setIsChangingPassword(true);
     try {
-      await authService.changePassword({
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-      });
-      toast.success('Password changed. Please log in again.');
+      await promiseToast(
+        authService.changePassword({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        }),
+        { loading: 'Updating password...', success: 'Password changed. Please log in again.' }
+      );
       reset();
       await logout();
       navigate('/login');
     } catch (err) {
-      toast.error(getErrorMessage(err));
+      // error toast already shown by promiseToast
     } finally {
       setIsChangingPassword(false);
     }
@@ -40,12 +43,14 @@ const SettingsPage = () => {
     if (!deletePassword) return toast.error('Please enter your password to confirm');
     setIsDeleting(true);
     try {
-      await userService.deleteAccount(deletePassword);
-      toast.success('Your account has been deleted');
+      await promiseToast(userService.deleteAccount(deletePassword), {
+        loading: 'Deleting your account...',
+        success: 'Your account has been deleted',
+      });
       navigate('/');
       window.location.reload();
     } catch (err) {
-      toast.error(getErrorMessage(err));
+      // error toast already shown by promiseToast
     } finally {
       setIsDeleting(false);
     }

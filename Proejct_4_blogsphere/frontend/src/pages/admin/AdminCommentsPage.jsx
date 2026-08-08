@@ -4,6 +4,7 @@ import { FiFlag, FiEyeOff, FiEye, FiTrash2 } from 'react-icons/fi';
 import { adminService } from '../../services/resourceServices';
 import { PageLoader } from '../../components/ui/Spinner';
 import { formatRelativeTime, getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const AdminCommentsPage = () => {
@@ -30,23 +31,28 @@ const AdminCommentsPage = () => {
   const handleToggleVisibility = async (comment) => {
     const newStatus = comment.status === 'visible' ? 'hidden' : 'visible';
     try {
-      await adminService.updateCommentStatus(comment._id, newStatus);
+      await promiseToast(adminService.updateCommentStatus(comment._id, newStatus), {
+        loading: 'Updating...',
+        success: newStatus === 'hidden' ? 'Comment hidden' : 'Comment made visible',
+      });
       setComments((prev) => prev.map((c) => (c._id === comment._id ? { ...c, status: newStatus, isReported: false } : c)));
-      toast.success(`Comment ${newStatus === 'hidden' ? 'hidden' : 'made visible'}`);
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this comment permanently?')) return;
-    try {
-      await adminService.deleteComment(id);
-      setComments((prev) => prev.filter((c) => c._id !== id));
-      toast.success('Comment deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (id) => {
+    confirmToast("Delete this comment permanently? This can't be undone.", async () => {
+      try {
+        await promiseToast(adminService.deleteComment(id), {
+          loading: 'Deleting comment...',
+          success: 'Comment deleted',
+        });
+        setComments((prev) => prev.filter((c) => c._id !== id));
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   return (

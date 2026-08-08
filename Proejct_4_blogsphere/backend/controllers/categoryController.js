@@ -4,7 +4,7 @@ const Blog = require('../models/Blog');
 const ApiError = require('../utils/ApiError');
 const sendResponse = require('../utils/apiResponse');
 const ApiFeatures = require('../utils/apiFeatures');
-const { saveBufferToDisk, deleteFromDisk } = require('../utils/fileStorage');
+const { uploadBufferToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
 
 /**
  * @desc    Get all categories (public, supports search/sort/pagination)
@@ -50,7 +50,7 @@ const createCategory = asyncHandler(async (req, res) => {
 
   let image;
   if (req.file) {
-    const result = saveBufferToDisk(req.file.buffer, 'categories', req.file.originalname);
+    const result = await uploadBufferToCloudinary(req.file.buffer, 'blogsphere/categories');
     image = { url: result.url, publicId: result.publicId };
   }
 
@@ -77,8 +77,8 @@ const updateCategory = asyncHandler(async (req, res) => {
   if (description !== undefined) category.description = description;
 
   if (req.file) {
-    if (category.image?.publicId) deleteFromDisk(category.image.publicId);
-    const result = saveBufferToDisk(req.file.buffer, 'categories', req.file.originalname);
+    if (category.image?.publicId) await deleteFromCloudinary(category.image.publicId);
+    const result = await uploadBufferToCloudinary(req.file.buffer, 'blogsphere/categories');
     category.image = { url: result.url, publicId: result.publicId };
   }
 
@@ -102,7 +102,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     );
   }
 
-  if (category.image?.publicId) deleteFromDisk(category.image.publicId);
+  if (category.image?.publicId) await deleteFromCloudinary(category.image.publicId);
   await category.deleteOne();
 
   sendResponse(res, 200, 'Category deleted successfully');

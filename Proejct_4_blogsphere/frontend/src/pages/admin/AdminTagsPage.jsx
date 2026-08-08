@@ -3,6 +3,7 @@ import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import { tagService } from '../../services/resourceServices';
 import { PageLoader } from '../../components/ui/Spinner';
 import { getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const AdminTagsPage = () => {
@@ -30,26 +31,31 @@ const AdminTagsPage = () => {
     if (!newTag.trim()) return;
     setIsSaving(true);
     try {
-      await tagService.createTag(newTag.trim());
+      await promiseToast(tagService.createTag(newTag.trim()), {
+        loading: 'Creating tag...',
+        success: 'Tag created',
+      });
       setNewTag('');
-      toast.success('Tag created');
       load();
     } catch (err) {
-      toast.error(getErrorMessage(err));
+      // error toast already shown by promiseToast
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this tag? It will be removed from all blogs.')) return;
-    try {
-      await tagService.deleteTag(id);
-      setTags((prev) => prev.filter((t) => t._id !== id));
-      toast.success('Tag deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (id, name) => {
+    confirmToast(`Delete "#${name}"? It will be removed from all blogs.`, async () => {
+      try {
+        await promiseToast(tagService.deleteTag(id), {
+          loading: 'Deleting tag...',
+          success: 'Tag deleted',
+        });
+        setTags((prev) => prev.filter((t) => t._id !== id));
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   return (
@@ -66,7 +72,7 @@ const AdminTagsPage = () => {
           {tags.map((t) => (
             <span key={t._id} className="inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-full bg-ink/[0.05] text-sm text-ink-600">
               {t.name} <span className="text-xs font-mono text-ink-300">{t.blogsCount}</span>
-              <button onClick={() => handleDelete(t._id)} className="text-ink-300 hover:text-rose transition-colors">
+              <button onClick={() => handleDelete(t._id, t.name)} className="text-ink-300 hover:text-rose transition-colors">
                 <FiTrash2 size={12} />
               </button>
             </span>

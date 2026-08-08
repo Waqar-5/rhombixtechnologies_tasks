@@ -4,6 +4,7 @@ import { FiHeart, FiCornerDownRight, FiEdit2, FiTrash2, FiFlag } from 'react-ico
 import { useAuth } from '../../context/AuthContext';
 import { blogService } from '../../services/blogService';
 import { formatRelativeTime, getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const CommentItem = ({ comment, blogId, onReplyPosted, onDeleted, isReply = false }) => {
@@ -80,15 +81,18 @@ const CommentItem = ({ comment, blogId, onReplyPosted, onDeleted, isReply = fals
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm('Delete this comment? This cannot be undone.')) return;
-    try {
-      await blogService.deleteComment(comment._id);
-      onDeleted?.(comment._id);
-      toast.success('Comment deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = () => {
+    confirmToast("Delete this comment? This can't be undone.", async () => {
+      try {
+        await promiseToast(blogService.deleteComment(comment._id), {
+          loading: 'Deleting comment...',
+          success: 'Comment deleted',
+        });
+        onDeleted?.(comment._id);
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   const handleReport = async () => {

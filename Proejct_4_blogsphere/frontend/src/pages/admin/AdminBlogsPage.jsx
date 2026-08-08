@@ -4,6 +4,7 @@ import { FiStar, FiCheck, FiX, FiTrash2 } from 'react-icons/fi';
 import { adminService } from '../../services/resourceServices';
 import { PageLoader } from '../../components/ui/Spinner';
 import { formatDate, getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const STATUS_STYLES = {
@@ -36,43 +37,53 @@ const AdminBlogsPage = () => {
 
   const handleFeature = async (id) => {
     try {
-      const { data } = await adminService.toggleFeature(id);
+      const { data } = await promiseToast(adminService.toggleFeature(id), {
+        loading: 'Updating...',
+        success: (res) => (res.data.data.blog.isFeatured ? 'Blog featured' : 'Blog unfeatured'),
+      });
       setBlogs((prev) => prev.map((b) => (b._id === id ? { ...b, isFeatured: data.data.blog.isFeatured } : b)));
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
   const handleApprove = async (id) => {
     try {
-      await adminService.approveBlog(id);
+      await promiseToast(adminService.approveBlog(id), {
+        loading: 'Approving...',
+        success: 'Blog approved and published',
+      });
       setBlogs((prev) => prev.map((b) => (b._id === id ? { ...b, status: 'published' } : b)));
-      toast.success('Blog approved and published');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
   const handleReject = async (id) => {
     const reason = window.prompt('Reason for rejection (optional):') || '';
     try {
-      await adminService.rejectBlog(id, reason);
+      await promiseToast(adminService.rejectBlog(id, reason), {
+        loading: 'Rejecting...',
+        success: 'Blog rejected',
+      });
       setBlogs((prev) => prev.map((b) => (b._id === id ? { ...b, status: 'rejected' } : b)));
-      toast.success('Blog rejected');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch {
+      // error toast already shown by promiseToast
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this blog permanently?')) return;
-    try {
-      await adminService.deleteBlog(id);
-      setBlogs((prev) => prev.filter((b) => b._id !== id));
-      toast.success('Blog deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (id, title) => {
+    confirmToast(`Delete "${title}"? This can't be undone.`, async () => {
+      try {
+        await promiseToast(adminService.deleteBlog(id), {
+          loading: 'Deleting blog...',
+          success: 'Blog deleted',
+        });
+        setBlogs((prev) => prev.filter((b) => b._id !== id));
+      } catch {
+        // error toast already shown by promiseToast
+      }
+    });
   };
 
   return (
@@ -121,7 +132,7 @@ const AdminBlogsPage = () => {
                 <button onClick={() => handleFeature(blog._id)} className={`p-2 transition-colors ${blog.isFeatured ? 'text-stamp' : 'text-ink-400 hover:text-stamp'}`} title="Toggle featured">
                   <FiStar size={16} className={blog.isFeatured ? 'fill-stamp' : ''} />
                 </button>
-                <button onClick={() => handleDelete(blog._id)} className="p-2 text-ink-400 hover:text-rose transition-colors" title="Delete">
+                <button onClick={() => handleDelete(blog._id, blog.title)} className="p-2 text-ink-400 hover:text-rose transition-colors" title="Delete">
                   <FiTrash2 size={16} />
                 </button>
               </div>

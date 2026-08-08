@@ -112,7 +112,7 @@
   }
 
   .prose-editorial {
-    @apply prose prose-lg max-w-none font-body text-ink-700 prose-headings:font-display
+    @apply prose prose-base sm:prose-lg max-w-none font-body text-ink-700 prose-headings:font-display
       prose-headings:text-ink prose-a:text-signal prose-a:no-underline hover:prose-a:underline
       prose-blockquote:border-stamp prose-blockquote:text-ink-500 prose-img:rounded-xl2;
   }

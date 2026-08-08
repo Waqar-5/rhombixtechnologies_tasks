@@ -116,7 +116,7 @@ const createComment = asyncHandler(async (req, res) => {
         console.error(`Failed to send reply notification email: ${err.message}`);
       }
     }
-  } else if (String(blog.author._id) !== String(req.user._id)) {
+  } else if (blog.author && String(blog.author._id) !== String(req.user._id)) {
     await createNotification({
       recipient: blog.author._id,
       sender: req.user._id,

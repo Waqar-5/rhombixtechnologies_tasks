@@ -35,21 +35,21 @@ trending); admins get full moderation and analytics tooling.
 
 **Admins** — everything above, plus: dashboard analytics (users, blogs, comments, views, likes), user management (role changes, block/unblock, cascading delete), blog moderation (approve/reject pending posts, feature/unfeature, delete any post), comment moderation (hide/unhide, delete), category and tag CRUD.
 
-**Content system** — auto-generated SEO-friendly slugs, estimated reading time, draft/pending/published/rejected workflow, cover image + gallery images stored locally via Multer, allowlist-sanitized rich text (React Quill), related posts, trending/latest/most-viewed/most-liked sorting, nested comment threads.
+**Content system** — auto-generated SEO-friendly slugs, estimated reading time, draft/pending/published/rejected workflow, cover image + gallery images via Cloudinary, allowlist-sanitized rich text (React Quill), related posts, trending/latest/most-viewed/most-liked sorting, nested comment threads.
 
 ## Tech Stack
 
 **Frontend:** React 18, React Router v6, Tailwind CSS, Axios, React Hook Form, React Quill, React Hot Toast, Framer Motion, React Icons, date-fns
 
-**Backend:** Node.js, Express, MongoDB, Mongoose, JWT (access + rotating refresh tokens), Multer (local disk image storage), Nodemailer, express-validator, Helmet, express-rate-limit, express-mongo-sanitize, hpp
+**Backend:** Node.js, Express, MongoDB, Mongoose, JWT (access + rotating refresh tokens), Cloudinary, Nodemailer, express-validator, Helmet, express-rate-limit, express-mongo-sanitize, hpp
 
 ## Project Structure
 
 ```
 blogsphere/
 ├── backend/
-│   ├── config/        env, db, mailer
-│   ├── uploads/       locally stored images (avatars, covers, gallery, categories)
+│   ├── config/        env, db, cloudinary, mailer
+│   ├── api/           Vercel serverless entry point (api/index.js)
 │   ├── controllers/   route handlers (auth, blog, comment, admin, ...)
 │   ├── middleware/    auth, security, validation, upload, error handling
 │   ├── models/        User, Blog, Comment, Category, Tag, Like, Bookmark, Notification
@@ -75,13 +75,13 @@ blogsphere/
 
 ```bash
 cd backend
-cp .env.example .env   # fill in MongoDB URI, JWT secrets, SMTP
+cp .env.example .env   # fill in MongoDB URI, JWT secrets, Cloudinary, SMTP
 npm install
 npm run seed             # optional: creates sample categories/tags + an admin account
 npm run dev               # http://localhost:5000
 ```
 
-Required accounts: **MongoDB Atlas** (free tier) and an SMTP provider (Gmail App Password works fine for dev). No image-hosting account needed — uploads are stored locally on the backend under `backend/uploads/` and served at `/uploads/...`.
+Required accounts (all have free tiers): **MongoDB Atlas**, **Cloudinary**, and an SMTP provider (Gmail App Password works fine for dev).
 
 ### 2. Frontend
 
@@ -114,7 +114,7 @@ with inline comments. Summary:
 |---|---|
 | `MONGO_URI` | MongoDB connection string |
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Token signing secrets |
-| `SERVER_URL` | Public backend URL, used to build image URLs (optional in dev) |
+| `CLOUDINARY_*` | Image upload/hosting |
 | `SMTP_*` | Transactional email |
 | `CLIENT_URL` | Frontend origin, used for CORS + email links |
 | `RATE_LIMIT_*` | API rate limiting thresholds |
@@ -207,20 +207,48 @@ _Add screenshots here once you have a running instance — e.g._
 
 ## Deployment
 
-- **Frontend** → Vercel or Netlify. Set `VITE_API_URL` to your deployed backend URL.
-- **Backend** → Render, Railway, or Fly.io. Set every variable from `.env.example` in your host's environment settings.
+- **Frontend** → Vercel or Netlify. Set `VITE_API_URL` to your deployed backend URL (include the `/api` suffix).
 - **Database** → MongoDB Atlas.
-- **Images** → stored on the backend's own disk under `uploads/`. On most hosts (Render, Railway) this is **ephemeral** — it's wiped on redeploy/restart. For production, either use a host with a persistent volume mounted at `backend/uploads/`, or swap `utils/fileStorage.js` for an S3/Cloudinary-backed version if you need durability across deploys.
+- **Images** → Cloudinary.
+
+### Deploying the backend to Vercel
+
+The backend includes a `vercel.json` and `api/index.js` specifically for
+this — Vercel runs Node apps as serverless functions rather than a
+traditional always-on server, so there's a dedicated entry point
+(`api/index.js`) that wraps the Express app with a MongoDB connection
+that's cached across warm invocations instead of reconnecting on every
+request. This is separate from `server.js` (still used for local dev,
+Render, Railway, or any traditional host) — nothing about your existing
+local setup changes.
+
+1. Push the `backend/` folder to a Git repo (or deploy that folder directly via the Vercel CLI: `vercel --cwd backend`)
+2. In the Vercel dashboard, import the project, and set the **root directory** to `backend`
+3. Add every variable from `backend/.env.example` under Project Settings → Environment Variables, with two important production-specific values:
+   - `NODE_ENV=production`
+   - `CLIENT_URL=https://your-frontend.vercel.app` (your actual deployed frontend URL — required for CORS and for links in emails to resolve correctly)
+4. Deploy. Vercel will build `api/index.js` as the serverless function handling every route.
+5. Once deployed, point your frontend's `VITE_API_URL` at `https://your-backend.vercel.app/api` and redeploy the frontend.
+
+**Known limitations of the serverless deployment**, worth knowing before you rely on it in production:
+- **Cold starts**: the first request after a period of inactivity will be slower (fresh MongoDB connection). Subsequent requests reuse the cached connection and are fast.
+- **Execution time limits**: Vercel's Hobby plan caps function execution at 10 seconds — usually fine, but a slow Cloudinary upload combined with a cold start could occasionally brush against that. The Pro plan raises this to 60s.
+- Nodemailer/SMTP and Cloudinary both work fine in this environment since neither depends on the local filesystem.
 
 ## Known Simplifications
 
 - The contact page form is UI-only (no backend endpoint was in scope) —
   wire it to a real endpoint or a service like Formspree before relying on it.
-- No image cropping/resizing on upload — images are saved to disk exactly
-  as received. Add the `sharp` package in `utils/fileStorage.js` if you
-  want server-side resizing/cropping (e.g. a face-aware avatar crop).
+- No image cropping/editing UI before upload; Cloudinary applies a
+  face-aware crop transform server-side for avatars only. Cover/gallery
+  images upload as-is.
 - The seed script creates sample categories/tags and one admin account;
   it does not generate sample blog posts.
+- If your database has any images from a previous local-storage setup
+  (URLs pointing at `/uploads/...` instead of Cloudinary), run
+  `npm run cleanup:uploads` once — it clears just those stale references
+  so the frontend's fallback placeholder shows instead of a broken image.
+  Safe to run any time; it's a no-op if there's nothing stale.
 
 ## Future Improvements
 
@@ -231,5 +259,3 @@ _Add screenshots here once you have a running instance — e.g._
 - Scheduled/timed publishing for drafts
 - Webhooks or an activity feed for admin moderation events
 - Automated test suite (unit + integration) — not included in this build
-- Swap local disk storage for S3/Cloudinary/similar if deploying to a host
-  without a persistent volume, so uploaded images survive redeploys

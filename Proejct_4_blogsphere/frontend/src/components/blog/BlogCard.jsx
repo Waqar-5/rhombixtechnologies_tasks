@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { FiClock, FiHeart, FiMessageCircle } from 'react-icons/fi';
 import { formatDate, formatCount, stripHtml, truncate } from '../../utils/formatters';
+import { useTilt } from '../../hooks/useTilt';
+import SafeImage from '../ui/SafeImage';
 
 /**
  * variant="featured" renders a larger asymmetric hero-style card (used on
@@ -8,28 +10,37 @@ import { formatDate, formatCount, stripHtml, truncate } from '../../utils/format
  * used everywhere else (blog listing, author profile, related posts).
  */
 const BlogCard = ({ blog, variant = 'default' }) => {
+  const tilt = useTilt(variant === 'featured' ? { max: 5, scale: 1.015, glare: 0.1 } : { max: 7, scale: 1.02, glare: 0.12 });
+
   if (!blog) return null;
 
   const excerpt = blog.excerpt || truncate(stripHtml(blog.content), 140);
 
   if (variant === 'featured') {
     return (
-      <Link to={`/blogs/${blog.slug}`} className="group block relative rounded-xl2 overflow-hidden card">
+      <Link
+        to={`/blogs/${blog.slug}`}
+        ref={tilt.ref}
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+        style={tilt.style}
+        className="group block relative rounded-xl2 overflow-hidden card hover:!translate-y-0"
+      >
         <div className="aspect-[16/9] overflow-hidden bg-signal-50">
-          {blog.coverImage?.url ? (
-            <img
-              src={blog.coverImage.url}
-              alt={blog.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center font-display text-4xl text-signal-300">
-              {blog.title[0]}
-            </div>
-          )}
+          <SafeImage
+            src={blog.coverImage?.url}
+            alt={blog.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fallback={
+              <div className="w-full h-full flex items-center justify-center font-display text-4xl text-signal-300">
+                {blog.title[0]}
+              </div>
+            }
+          />
           {blog.isFeatured && (
             <span className="stamp-badge absolute top-4 right-4 font-display text-xs font-semibold">★</span>
           )}
+          <div data-tilt-glare className="absolute inset-0 pointer-events-none transition-[background] duration-200" />
         </div>
         <div className="p-6">
           {blog.category?.name && (
@@ -52,20 +63,27 @@ const BlogCard = ({ blog, variant = 'default' }) => {
   }
 
   return (
-    <Link to={`/blogs/${blog.slug}`} className="group block card overflow-hidden">
+    <Link
+      to={`/blogs/${blog.slug}`}
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      style={tilt.style}
+      className="group block card overflow-hidden hover:!translate-y-0"
+    >
       <div className="aspect-[16/10] overflow-hidden bg-signal-50 relative">
-        {blog.coverImage?.url ? (
-          <img
-            src={blog.coverImage.url}
-            alt={blog.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center font-display text-3xl text-signal-300">
-            {blog.title[0]}
-          </div>
-        )}
+        <SafeImage
+          src={blog.coverImage?.url}
+          alt={blog.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          fallback={
+            <div className="w-full h-full flex items-center justify-center font-display text-3xl text-signal-300">
+              {blog.title[0]}
+            </div>
+          }
+        />
         {blog.isFeatured && <span className="stamp-badge absolute top-3 right-3 text-xs">★</span>}
+        <div data-tilt-glare className="absolute inset-0 pointer-events-none transition-[background] duration-200" />
       </div>
       <div className="p-5">
         {blog.category?.name && <span className="eyebrow">{blog.category.name}</span>}
@@ -77,11 +95,12 @@ const BlogCard = ({ blog, variant = 'default' }) => {
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-ink-400">
             <div className="w-6 h-6 rounded-full bg-signal-50 overflow-hidden flex items-center justify-center text-[10px] font-display text-signal">
-              {blog.author?.avatar?.url ? (
-                <img src={blog.author.avatar.url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                blog.author?.name?.[0]
-              )}
+              <SafeImage
+                src={blog.author?.avatar?.url}
+                alt=""
+                className="w-full h-full object-cover"
+                fallback={blog.author?.name?.[0]}
+              />
             </div>
             <span className="font-mono">{blog.author?.name}</span>
           </div>

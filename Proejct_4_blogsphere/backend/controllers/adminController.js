@@ -9,7 +9,7 @@ const Like = require('../models/Like');
 const ApiError = require('../utils/ApiError');
 const sendResponse = require('../utils/apiResponse');
 const ApiFeatures = require('../utils/apiFeatures');
-const { deleteFromDisk } = require('../utils/fileStorage');
+const { deleteFromCloudinary } = require('../config/cloudinary');
 const { createNotification } = require('../services/notificationService');
 const emailService = require('../services/emailService');
 const config = require('../config/env');
@@ -174,7 +174,7 @@ const deleteUser = asyncHandler(async (req, res) => {
       ...b.images.map((img) => img.publicId),
     ].filter(Boolean)),
   ];
-  imagesToDelete.forEach((id) => deleteFromDisk(id));
+  await Promise.all(imagesToDelete.map((id) => deleteFromCloudinary(id)));
 
   await Promise.all([
     Blog.deleteMany({ author: user._id }),
@@ -223,7 +223,7 @@ const toggleFeatureBlog = asyncHandler(async (req, res) => {
   blog.isFeatured = !blog.isFeatured;
   await blog.save();
 
-  if (blog.isFeatured) {
+  if (blog.isFeatured && blog.author) {
     await createNotification({
       recipient: blog.author,
       type: 'blog_featured',
@@ -248,19 +248,21 @@ const approveBlog = asyncHandler(async (req, res) => {
   blog.status = 'published';
   await blog.save();
 
-  await createNotification({
-    recipient: blog.author._id,
-    type: 'blog_approved',
-    message: `Your post "${blog.title}" was approved and is now live!`,
-    link: `/blogs/${blog.slug}`,
-    relatedBlog: blog._id,
-  });
+  if (blog.author) {
+    await createNotification({
+      recipient: blog.author._id,
+      type: 'blog_approved',
+      message: `Your post "${blog.title}" was approved and is now live!`,
+      link: `/blogs/${blog.slug}`,
+      relatedBlog: blog._id,
+    });
 
-  try {
-    await emailService.sendBlogPublishedEmail(blog.author, blog.title, `${config.clientUrl}/blogs/${blog.slug}`);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to send approval email: ${err.message}`);
+    try {
+      await emailService.sendBlogPublishedEmail(blog.author, blog.title, `${config.clientUrl}/blogs/${blog.slug}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`Failed to send approval email: ${err.message}`);
+    }
   }
 
   sendResponse(res, 200, 'Blog approved and published', { blog });
@@ -278,13 +280,15 @@ const rejectBlog = asyncHandler(async (req, res) => {
   blog.status = 'rejected';
   await blog.save();
 
-  await createNotification({
-    recipient: blog.author._id,
-    type: 'blog_rejected',
-    message: `Your post "${blog.title}" was not approved. ${req.body.reason || ''}`.trim(),
-    link: `/dashboard/blogs`,
-    relatedBlog: blog._id,
-  });
+  if (blog.author) {
+    await createNotification({
+      recipient: blog.author._id,
+      type: 'blog_rejected',
+      message: `Your post "${blog.title}" was not approved. ${req.body.reason || ''}`.trim(),
+      link: `/dashboard/blogs`,
+      relatedBlog: blog._id,
+    });
+  }
 
   sendResponse(res, 200, 'Blog rejected', { blog });
 });
@@ -302,7 +306,7 @@ const adminDeleteBlog = asyncHandler(async (req, res) => {
     ...(blog.coverImage?.publicId ? [blog.coverImage.publicId] : []),
     ...blog.images.map((img) => img.publicId).filter(Boolean),
   ];
-  imagesToDelete.forEach((id) => deleteFromDisk(id));
+  await Promise.all(imagesToDelete.map((id) => deleteFromCloudinary(id)));
 
   await Promise.all([
     Comment.deleteMany({ blog: blog._id }),

@@ -5,6 +5,7 @@ import { blogService } from '../../services/blogService';
 import { PageLoader } from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
 import { formatDate, getErrorMessage } from '../../utils/formatters';
+import { confirmToast, promiseToast } from '../../utils/toastHelpers';
 import toast from 'react-hot-toast';
 
 const STATUS_STYLES = {
@@ -33,15 +34,18 @@ const MyBlogsPage = () => {
 
   useEffect(() => { load(); }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this blog permanently?')) return;
-    try {
-      await blogService.deleteBlog(id);
-      setBlogs((prev) => prev.filter((b) => b._id !== id));
-      toast.success('Blog deleted');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    }
+  const handleDelete = (id, title) => {
+    confirmToast(`Delete "${title}"? This can't be undone.`, async () => {
+      try {
+        await promiseToast(blogService.deleteBlog(id), {
+          loading: 'Deleting post...',
+          success: 'Post deleted',
+        });
+        setBlogs((prev) => prev.filter((b) => b._id !== id));
+      } catch {
+        // promiseToast already shows the error toast; nothing further to do
+      }
+    });
   };
 
   const filtered = filter === 'all' ? blogs : blogs.filter((b) => b.status === filter);
@@ -100,7 +104,7 @@ const MyBlogsPage = () => {
                 <Link to={`/dashboard/write/${blog._id}`} className="p-2 text-ink-400 hover:text-signal transition-colors">
                   <FiEdit3 size={16} />
                 </Link>
-                <button onClick={() => handleDelete(blog._id)} className="p-2 text-ink-400 hover:text-rose transition-colors">
+                <button onClick={() => handleDelete(blog._id, blog.title)} className="p-2 text-ink-400 hover:text-rose transition-colors">
                   <FiTrash2 size={16} />
                 </button>
               </div>

@@ -4,9 +4,6 @@ const morgan = require('morgan');
 const { applySecurityMiddleware } = require('./middleware/security');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const config = require('./config/env');
-// Importing this triggers its module-level side effect of creating the
-// uploads/ subfolders if they don't exist yet.
-const { UPLOADS_ROOT } = require('./utils/fileStorage');
 
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
@@ -35,22 +32,6 @@ if (config.env === 'development') {
 }
 
 applySecurityMiddleware(app);
-
-// Serve locally-stored uploaded images (avatars, cover images, etc).
-// Helmet (applied above) sets Cross-Origin-Resource-Policy: same-origin
-// by default on every response, which is the right call for JSON API
-// responses but blocks the browser from loading these images when the
-// frontend runs on a different origin/port (e.g. localhost:5173 loading
-// from localhost:5000). Override it just for this route — these are
-// public, non-sensitive static assets meant to be embedded cross-origin.
-app.use(
-  '/uploads',
-  (req, res, next) => {
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    next();
-  },
-  express.static(UPLOADS_ROOT)
-);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'BlogSphere API is running', env: config.env });
