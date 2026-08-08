@@ -29,8 +29,7 @@ module.exports = {
   env: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
   port: parseInt(process.env.PORT, 10) || 5000,
-  clientUrl: process.env.CLIENT_URL || 'https://blogwebsite-swart.vercel.app/',
-
+ clientUrl: (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, ''),
   mongoUri: process.env.MONGO_URI,
 
   jwt: {
