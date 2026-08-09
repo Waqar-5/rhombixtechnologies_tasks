@@ -148,7 +148,7 @@ const WriteBlogPage = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Your story title..."
-          className="w-full font-display text-3xl font-semibold text-ink placeholder:text-ink-300 border-none outline-none bg-transparent"
+          className="w-full font-display text-2xl sm:text-3xl font-semibold text-ink placeholder:text-ink-300 border-none outline-none bg-transparent"
         />
 
         <textarea
@@ -163,7 +163,7 @@ const WriteBlogPage = () => {
           <label className="text-sm font-medium text-ink-600 mb-2 block">Cover image</label>
           {coverPreview ? (
             <div className="relative rounded-xl2 overflow-hidden">
-              <img src={coverPreview} alt="Cover preview" className="w-full h-56 object-cover" />
+              <img src={coverPreview} alt="Cover preview" className="w-full h-40 sm:h-56 object-cover" />
               <button
                 onClick={() => { setCoverPreview(''); setCoverImageFile(null); }}
                 className="absolute top-3 right-3 w-8 h-8 rounded-full bg-ink/70 text-paper-light flex items-center justify-center hover:bg-ink"
@@ -172,9 +172,9 @@ const WriteBlogPage = () => {
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center h-40 rounded-xl2 border-2 border-dashed border-ink/15 cursor-pointer hover:border-signal transition-colors">
-              <FiUpload size={20} className="text-ink-300" />
-              <span className="mt-2 text-sm text-ink-400">Click to upload a cover image</span>
+            <label className="flex flex-col items-center justify-center h-32 sm:h-40 rounded-xl2 border-2 border-dashed border-ink/15 cursor-pointer hover:border-signal transition-colors px-4 text-center">
+              <FiUpload size={20} className="text-ink-300 shrink-0" />
+              <span className="mt-2 text-xs sm:text-sm text-ink-400">Click to upload a cover image</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
             </label>
           )}
@@ -201,23 +201,23 @@ const WriteBlogPage = () => {
 
         <div>
           <label className="text-sm font-medium text-ink-600 mb-1.5 block">Content</label>
-          <div className="bg-paper-light rounded-lg overflow-hidden border border-ink/15">
+          <div className="quill-editor-wrapper bg-paper-light rounded-lg overflow-hidden border border-ink/15">
             <ReactQuill
               theme="snow"
               value={content}
               onChange={setContent}
               modules={QUILL_MODULES}
               placeholder="Tell your story..."
-              className="[&_.ql-editor]:min-h-[320px] [&_.ql-editor]:font-body [&_.ql-editor]:text-[17px] [&_.ql-toolbar]:border-ink/15 [&_.ql-container]:border-ink/15"
+              className="[&_.ql-editor]:min-h-[220px] sm:[&_.ql-editor]:min-h-[320px] [&_.ql-editor]:font-body [&_.ql-editor]:text-[16px] sm:[&_.ql-editor]:text-[17px] [&_.ql-toolbar]:border-ink/15 [&_.ql-container]:border-ink/15"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <button onClick={() => handleSave('draft')} disabled={isSaving} className="btn-secondary">
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <button onClick={() => handleSave('draft')} disabled={isSaving} className="btn-secondary w-full sm:w-auto">
             Save as draft
           </button>
-          <button onClick={() => handleSave('published')} disabled={isSaving} className="btn-primary">
+          <button onClick={() => handleSave('published')} disabled={isSaving} className="btn-primary w-full sm:w-auto">
             {isSaving ? 'Saving...' : 'Publish'}
           </button>
         </div>

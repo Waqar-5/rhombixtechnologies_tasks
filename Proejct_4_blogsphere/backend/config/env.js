@@ -29,7 +29,8 @@ module.exports = {
   env: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
   port: parseInt(process.env.PORT, 10) || 5000,
- clientUrl: (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, ''),
+  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+
   mongoUri: process.env.MONGO_URI,
 
   jwt: {

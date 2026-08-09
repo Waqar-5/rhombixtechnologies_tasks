@@ -139,4 +139,30 @@
     @apply scale-90 rotate-0;
     transition-duration: 100ms;
   }
+
+  /*
+   * React Quill's stock toolbar CSS doesn't wrap its button groups on
+   * narrow screens — on phones the toolbar overflows horizontally instead
+   * of flowing onto a second line. This scopes a fix to just the editor
+   * wrapper so it never affects Quill instances elsewhere unexpectedly.
+   */
+  .quill-editor-wrapper .ql-toolbar.ql-snow {
+    @apply flex flex-wrap items-center gap-y-1.5;
+  }
+  .quill-editor-wrapper .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 8px !important;
+  }
+  @media (max-width: 480px) {
+    .quill-editor-wrapper .ql-toolbar.ql-snow {
+      padding: 6px 8px;
+    }
+    .quill-editor-wrapper .ql-toolbar.ql-snow button {
+      width: 24px;
+      height: 24px;
+      padding: 2px;
+    }
+    .quill-editor-wrapper .ql-toolbar.ql-snow .ql-picker {
+      font-size: 12px;
+    }
+  }
 }
