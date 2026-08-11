@@ -6,6 +6,7 @@ const sendResponse = require('../utils/apiResponse');
 const { issueTokens, clearAuthCookies, verifyRefreshToken, signAccessToken, hashToken } = require('../utils/tokenUtils');
 const emailService = require('../services/emailService');
 const { createNotification } = require('../services/notificationService');
+const config = require('../config/env');
 
 /**
  * @desc    Register a new user, send verification email. Deliberately does
@@ -119,8 +120,8 @@ const refresh = asyncHandler(async (req, res) => {
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-    sameSite: 'lax',
+    secure: config.isProd,
+    sameSite: config.isProd ? 'none' : 'lax',
     maxAge: 15 * 60 * 1000,
   });
 
