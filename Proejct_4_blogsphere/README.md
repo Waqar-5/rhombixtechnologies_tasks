@@ -207,7 +207,7 @@ _Add screenshots here once you have a running instance — e.g._
 
 ## Deployment
 
-- **Frontend** → Vercel or Netlify. Set `VITE_API_URL` to your deployed backend URL (include the `/api` suffix).
+- **Frontend** → Vercel or Netlify. Set `VITE_API_URL` to your deployed backend URL (include the `/api` suffix). `frontend/vercel.json` includes a catch-all rewrite to `index.html` — this is required for a React Router SPA on Vercel, otherwise direct navigation to any client-side route (e.g. a password-reset link from an email, or refreshing on `/blogs/some-slug`) 404s, since Vercel looks for an actual file at that path by default.
 - **Database** → MongoDB Atlas.
 - **Images** → Cloudinary.
 
