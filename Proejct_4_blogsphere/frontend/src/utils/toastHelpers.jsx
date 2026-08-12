@@ -19,7 +19,7 @@ export const confirmToast = (message, onConfirm, { danger = true } = {}) => {
         <div className="flex gap-2 justify-end">
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1.5 rounded-full text-xs font-medium text-ink-300 hover:text-paper-light hover:bg-white/10 transition-colors"
+            className="btn-ghost !text-ink-300 hover:!text-paper-light hover:!bg-white/10 py-1.5 px-3.5 text-xs"
           >
             Cancel
           </button>
@@ -28,11 +28,7 @@ export const confirmToast = (message, onConfirm, { danger = true } = {}) => {
               toast.dismiss(t.id);
               onConfirm();
             }}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              danger
-                ? 'bg-rose text-paper-light hover:bg-rose-dark'
-                : 'bg-stamp text-ink-900 hover:bg-stamp-light'
-            }`}
+            className={danger ? 'btn-danger py-1.5 px-3.5 text-xs' : 'btn-stamp py-1.5 px-3.5 text-xs'}
           >
             {danger ? 'Delete' : 'Confirm'}
           </button>
@@ -68,6 +64,7 @@ export const promiseToast = (promise, { loading, success }) =>
     },
     {
       style: { minWidth: '200px' },
-      success: { duration: 3000 },
+      success: { duration: 2200, className: 'toast-progress toast-progress-success' },
+      error: { duration: 3200, className: 'toast-progress toast-progress-error' },
     }
   );

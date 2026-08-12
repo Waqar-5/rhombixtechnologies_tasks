@@ -166,3 +166,39 @@
     }
   }
 }
+
+/*
+ * Toast polish: a thin, colored progress bar along the bottom edge that
+ * visibly shrinks as the toast counts down to dismissal — makes the
+ * remaining time legible at a glance instead of a toast just vanishing
+ * unpredictably, and reads as considerably more "designed" than a flat
+ * dismiss. Durations here are matched to the values configured in
+ * main.jsx's <Toaster toastOptions> for each type.
+ */
+.toast-progress {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 10px !important;
+}
+.toast-progress::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toast-shrink linear forwards;
+}
+.toast-progress-success::after {
+  background: #c99a2e;
+  animation-duration: 2200ms;
+}
+.toast-progress-error::after {
+  background: #c1443c;
+  animation-duration: 3200ms;
+}
+@keyframes toast-shrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}

@@ -120,12 +120,23 @@ const WriteBlogPage = () => {
       const formData = buildFormData(status);
       if (isEditMode) {
         await blogService.updateBlog(id, formData);
-        toast.success(status === 'published' ? 'Blog published!' : 'Blog updated');
+        toast.success(status === 'published' ? 'Published!' : 'Blog updated');
         navigate('/dashboard/my-blogs');
       } else {
         const { data } = await blogService.createBlog(formData);
-        toast.success(status === 'published' ? 'Blog published!' : 'Draft saved');
-        navigate(`/dashboard/write/${data.data.blog._id}`, { replace: true });
+        if (status === 'published') {
+          // Publishing should always take you away with a clear "done"
+          // signal — staying on the write page here (as this used to do)
+          // looked like nothing happened, which is exactly what caused
+          // people to click Publish a second time.
+          toast.success('Published!');
+          navigate('/dashboard/my-blogs');
+        } else {
+          // Saving a draft is different: keep the person in the editor
+          // (now pointed at the real post ID) so they can keep writing.
+          toast.success('Draft saved');
+          navigate(`/dashboard/write/${data.data.blog._id}`, { replace: true });
+        }
       }
     } catch (err) {
       toast.error(getErrorMessage(err));
