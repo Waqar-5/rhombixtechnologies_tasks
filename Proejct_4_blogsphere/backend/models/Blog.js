@@ -83,11 +83,19 @@ blogSchema.index({ isFeatured: 1 });
 
 // --- Auto slug + reading time on save ---
 blogSchema.pre('validate', function generateSlug(next) {
-  if (this.isModified('title') || !this.slug) {
-    const base = slugify(this.title, { lower: true, strict: true });
-    // Append a short random suffix to keep slugs unique even for
-    // duplicate/similar titles without an extra DB round trip here.
-    this.slug = `${base}-${Math.random().toString(36).substring(2, 8)}`;
+  // Slugs are generated ONCE, at creation, and never touched again — even
+  // if the title is edited later. This keeps a post's URL stable so
+  // bookmarks and shared links never break. (Previously this regenerated
+  // on every save because Mongoose considers a field "modified" any time
+  // it's reassigned, even to its existing value — which the controller
+  // does on every update — so the slug was silently changing on every edit.)
+  if (this.isNew && !this.slug) {
+    const base = slugify(this.title, { lower: true, strict: true }) || 'post';
+    // Suffix with a slice of this document's own ObjectId rather than
+    // Math.random(). Two documents can never share an _id, so this makes
+    // a slug collision structurally impossible instead of merely
+    // statistically unlikely.
+    this.slug = `${base}-${this._id.toString().slice(-8)}`;
   }
   next();
 });
