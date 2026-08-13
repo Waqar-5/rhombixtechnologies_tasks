@@ -7,10 +7,19 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Hard safety net: the page itself should NEVER scroll horizontally,
+       regardless of what ends up inside it — a long unbroken URL pasted
+       into a blog post, a wide code block, an oversized embedded image,
+       etc. Individual scrollable regions (like code blocks) opt back into
+       horizontal scroll locally further down; this just guarantees a
+       runaway child can never drag the whole page sideways. */
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-paper text-ink font-sans antialiased;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   h1, h2, h3, h4 {
@@ -115,6 +124,29 @@
     @apply prose prose-base sm:prose-lg max-w-none font-body text-ink-700 prose-headings:font-display
       prose-headings:text-ink prose-a:text-signal prose-a:no-underline hover:prose-a:underline
       prose-blockquote:border-stamp prose-blockquote:text-ink-500 prose-img:rounded-xl2;
+    /* Defensive overflow handling for arbitrary user-generated content —
+       a long unbroken URL/word, a wide code block, or a wide table pasted
+       into a post shouldn't be able to stretch the page horizontally. */
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .prose-editorial img,
+  .prose-editorial iframe,
+  .prose-editorial video {
+    max-width: 100%;
+    height: auto;
+  }
+  .prose-editorial pre,
+  .prose-editorial code {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  .prose-editorial table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .skeleton {

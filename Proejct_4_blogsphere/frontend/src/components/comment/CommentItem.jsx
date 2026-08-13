@@ -137,7 +137,7 @@ const CommentItem = ({ comment, blogId, onReplyPosted, onDeleted, isReply = fals
               </div>
             </div>
           ) : (
-            <p className="mt-1 text-sm text-ink-600 leading-relaxed">{comment.content}</p>
+            <p className="mt-1 text-sm text-ink-600 leading-relaxed break-words">{comment.content}</p>
           )}
 
           <div className="mt-2 flex items-center gap-4 text-xs text-ink-400">

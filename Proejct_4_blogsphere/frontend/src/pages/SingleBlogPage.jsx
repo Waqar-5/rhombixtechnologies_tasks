@@ -109,10 +109,10 @@ const SingleBlogPage = () => {
             {blog.category.name}
           </Link>
         )}
-        <h1 className="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-ink leading-[1.1]">
+        <h1 className="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-ink leading-[1.1] break-words">
           {blog.title}
         </h1>
-        {blog.excerpt && <p className="mt-4 text-base sm:text-lg text-ink-400 font-body leading-relaxed">{blog.excerpt}</p>}
+        {blog.excerpt && <p className="mt-4 text-base sm:text-lg text-ink-400 font-body leading-relaxed break-words">{blog.excerpt}</p>}
 
         <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
           {authorExists ? (

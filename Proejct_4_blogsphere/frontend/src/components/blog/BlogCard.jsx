@@ -46,10 +46,10 @@ const BlogCard = ({ blog, variant = 'default' }) => {
           {blog.category?.name && (
             <span className="eyebrow">{blog.category.name}</span>
           )}
-          <h3 className="mt-2 font-display text-2xl font-semibold text-ink leading-snug group-hover:text-signal transition-colors">
+          <h3 className="mt-2 font-display text-2xl font-semibold text-ink leading-snug group-hover:text-signal transition-colors break-words">
             {blog.title}
           </h3>
-          <p className="mt-2 text-ink-400 font-body text-[15px] leading-relaxed">{excerpt}</p>
+          <p className="mt-2 text-ink-400 font-body text-[15px] leading-relaxed break-words">{excerpt}</p>
           <div className="mt-4 flex items-center gap-3 text-xs font-mono text-ink-300">
             <span>{blog.author?.name}</span>
             <span>·</span>
@@ -87,10 +87,10 @@ const BlogCard = ({ blog, variant = 'default' }) => {
       </div>
       <div className="p-5">
         {blog.category?.name && <span className="eyebrow">{blog.category.name}</span>}
-        <h3 className="mt-1.5 font-display text-lg font-semibold text-ink leading-snug line-clamp-2 group-hover:text-signal transition-colors">
+        <h3 className="mt-1.5 font-display text-lg font-semibold text-ink leading-snug line-clamp-2 group-hover:text-signal transition-colors break-words">
           {blog.title}
         </h3>
-        <p className="mt-1.5 text-sm text-ink-400 line-clamp-2 font-body">{excerpt}</p>
+        <p className="mt-1.5 text-sm text-ink-400 line-clamp-2 font-body break-words">{excerpt}</p>
 
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-ink-400">
